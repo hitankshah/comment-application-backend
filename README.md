@@ -2,8 +2,8 @@
 
 A real-time comment system with nested replies, user authentication, and notifications built with Next.js, NestJS, WebSockets, and TypeScript.
 
-##  architecture of  full-stack comment application
-     flowchart TD
+```mermaid
+flowchart TD
     subgraph FE["Next.js Frontend"]
         direction TB
         FE_Pages["Pages: Login, Register,\nComments Thread"]
@@ -30,6 +30,7 @@ A real-time comment system with nested replies, user authentication, and notific
     FE --> BE
     BE --> DB
     Docker -.-> FE & BE & DB
+```
 
 ## Features
 
@@ -245,5 +246,4 @@ backend/
 MIT
 
 ## Contributors
-
-(@hitankshah)
+@hitankshah
