@@ -1,4 +1,3 @@
-'use client';
 import { useState } from 'react';
 import api from '../api/axios';
 import useSocket from '../hooks/useSocket';

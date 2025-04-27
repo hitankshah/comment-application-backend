@@ -1,46 +1,58 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: commentsdb  
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: commentsdb
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/commentsdb
+      TYPEORM_SYNCHRONIZE: "true"
+      TYPEORM_AUTO_LOAD_ENTITIES: "true"
+    networks:
+      - app-network
+
   frontend:
     build: 
       context: ./frontend
     ports:
       - "3001:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:3000
+      NEXT_PUBLIC_API_URL: http://backend:3000  
     depends_on:
       - backend
-    networks:
-      - app-network
-
-  backend:
-    build: 
-      context: ./backend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - redis
-      - postgres
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/comments
-      - REDIS_URL=redis://redis:6379
-    networks:
-      - app-network
-
-  redis:
-    image: redis:alpine
-    networks:
-      - app-network
-
-  postgres:
-    image: postgres:13
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=comments
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data:

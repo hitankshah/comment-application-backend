@@ -30,48 +30,19 @@ export default function CommentsPage() {
   }, [isLoading, isAuthenticated]);
 
   // WebSocket connection for real-time updates
-  const { socket, isConnected, on, off } = useSocket('/comments');
-  
-  // Effect to handle WebSocket connection status changes
-  useEffect(() => {
-    if (!isConnected && !isLoading && isAuthenticated) {
-      setSocketError('WebSocket disconnected. Real-time updates may be delayed.');
-    } else {
-      setSocketError('');
-    }
-  }, [isConnected, isLoading, isAuthenticated]);
+  const { socket, isConnected, on, off, emit } = useSocket('/comments');
 
-  // Set up socket event handlers
   useEffect(() => {
-    if (socket) {
-      // Register socket event handlers
-      const cleanup = on('comment', handleSocketEvent);
-      
-      // Cleanup function to remove event listeners
-      return () => {
-        cleanup();
-      };
+    if (isConnected) {
+      on('commentUpdate', handleCommentUpdate);
+      // Add other event listeners as needed
     }
-  }, [socket, on]);
 
-  function handleSocketEvent(data: any) {
-    if (!data || !data.action) return;
-    
-    switch (data.action) {
-      case 'create':
-        handleCommentCreate(data.comment);
-        break;
-      case 'update':
-        handleCommentUpdate(data.comment);
-        break;
-      case 'delete':
-        handleCommentDelete(data.commentId);
-        break;
-      case 'restore':
-        handleCommentRestore(data.comment);
-        break;
-    }
-  }
+    return () => {
+      off('commentUpdate', handleCommentUpdate);
+      // Remove other event listeners
+    };
+  }, [isConnected, on, off]);
 
   function handleCommentCreate(newComment: Comment) {
     // For top-level comments

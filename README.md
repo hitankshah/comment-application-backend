@@ -2,6 +2,42 @@
 
 A real-time comment system with nested replies, user authentication, and notifications built with Next.js, NestJS, WebSockets, and TypeScript.
 
+##  architecture of your full-stack comment application
+                            +-----------------------------+
+                           |       Next.js Frontend      |
+                           |-----------------------------|
+                           | Pages: Login, Register,     |
+                           |         Comments Thread     |
+                           | Components: CommentCard,    |
+                           | ReplyForm, ThreadView       |
+                           |                             |
+                           | API Calls → /api/**         |
+                           +-------------+---------------+
+                                         |
+                                         ▼
+        +----------------------------------------------------------+
+        |                    NestJS Backend (API)                  |
+        |----------------------------------------------------------|
+        | Auth Module         → /auth/login, /auth/register        |
+        | User Module         → /users                             |
+        | Comment Module      → /comments (CRUD + Nesting Logic)   |
+        | Notification Module → /notifications (read/unread)       |
+        | WebSocket Gateway   → Real-time Replies + Notifications  |
+        +---------------------+------------------------------------+
+                              |
+                              ▼
+                   +-------------------------+
+                   |      PostgreSQL DB      |
+                   |-------------------------|
+                   | Tables:                 |
+                   |  - users                |
+                   |  - comments             |
+                   |  - notifications        |
+                   +-------------------------+
+
+                         ⎧ Docker Compose ⎫
+                         ⎩  Orchestrates All ⎭
+
 ## Features
 
 - User authentication with JWT
@@ -41,8 +77,8 @@ A real-time comment system with nested replies, user authentication, and notific
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/full-stack-comment.git
-cd full-stack-comment
+git clone https://github.com/hitankshah/comment-application-backend.git 
+cd comment-application-backend
 ```
 
 2. Configure environment variables:
@@ -67,6 +103,8 @@ CORS_ORIGIN=http://localhost:3001
 Create `.env.local` in the `frontend` directory:
 ```
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_WS_URL=http://localhost:3000
+
 ```
 
 ### Local Development
@@ -215,4 +253,4 @@ MIT
 
 ## Contributors
 
-- Your Name (@yourusername)
+(@hitankshah)
