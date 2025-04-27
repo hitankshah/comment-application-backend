@@ -2,41 +2,34 @@
 
 A real-time comment system with nested replies, user authentication, and notifications built with Next.js, NestJS, WebSockets, and TypeScript.
 
-##  architecture of your full-stack comment application
-                            +-----------------------------+
-                           |       Next.js Frontend      |
-                           |-----------------------------|
-                           | Pages: Login, Register,     |
-                           |         Comments Thread     |
-                           | Components: CommentCard,    |
-                           | ReplyForm, ThreadView       |
-                           |                             |
-                           | API Calls → /api/**         |
-                           +-------------+---------------+
-                                         |
-                                         ▼
-        +----------------------------------------------------------+
-        |                    NestJS Backend (API)                  |
-        |----------------------------------------------------------|
-        | Auth Module         → /auth/login, /auth/register        |
-        | User Module         → /users                             |
-        | Comment Module      → /comments (CRUD + Nesting Logic)   |
-        | Notification Module → /notifications (read/unread)       |
-        | WebSocket Gateway   → Real-time Replies + Notifications  |
-        +---------------------+------------------------------------+
-                              |
-                              ▼
-                   +-------------------------+
-                   |      PostgreSQL DB      |
-                   |-------------------------|
-                   | Tables:                 |
-                   |  - users                |
-                   |  - comments             |
-                   |  - notifications        |
-                   +-------------------------+
-
-                         ⎧ Docker Compose ⎫
-                         ⎩  Orchestrates All ⎭
+##  architecture of  full-stack comment application
+     flowchart TD
+    subgraph FE["Next.js Frontend"]
+        direction TB
+        FE_Pages["Pages: Login, Register,\nComments Thread"]
+        FE_Components["Components: CommentCard,\nReplyForm, ThreadView"]
+        FE_API["API Calls → /api/**"]
+    end
+    
+    subgraph BE["NestJS Backend (API)"]
+        direction TB
+        BE_Auth["Auth Module         → /auth/login, /auth/register"]
+        BE_User["User Module         → /users"]
+        BE_Comment["Comment Module      → /comments (CRUD + Nesting Logic)"]
+        BE_Notification["Notification Module → /notifications (read/unread)"]
+        BE_WebSocket["WebSocket Gateway   → Real-time Replies + Notifications"]
+    end
+    
+    subgraph DB["PostgreSQL DB"]
+        direction TB
+        DB_Tables["Tables:\n- users\n- comments\n- notifications"]
+    end
+    
+    Docker["Docker Compose\nOrchestrates All"]
+    
+    FE --> BE
+    BE --> DB
+    Docker -.-> FE & BE & DB
 
 ## Features
 
